@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * This class represents a mapping of ZeroAbstractValues (BOTTOM, -, 0, +, <=0, >=0, !=0 or TOP) to variable names.
+ * This class represents a mapping of ZeroAbstractValues (BOTTOM, -, 0, +,  or TOP) to variable names.
  */
 public class ZeroAbstractState {
 
@@ -57,14 +57,23 @@ public class ZeroAbstractState {
 
     /**
      * This method returns the union of this state with another state.
-     * Recall: state: Var -> {BOTTOM, -, 0, +, <=0, >=0, !=0, TOP}
+     * Recall: state: Var -> {BOTTOM, -, 0, +, TOP}
      * @param another the other state.
      * @return the union of this state with another state.
      */
     public ZeroAbstractState union(ZeroAbstractState another) {
         ZeroAbstractState result = new ZeroAbstractState();
-        // TODO: IMPLEMENT
-        throw new UnsupportedOperationException("Operation is not implemented yet.");
+        for (String variable : this.getDefinedVariables()) {
+            result.setValue(variable, this.getValue(variable));
+        }
+        for (String variable : another.getDefinedVariables()) {
+            if (result.hasValue(variable)) {
+                result.setValue(variable, result.getValue(variable).merge(another.getValue(variable)));
+            } else {
+                result.setValue(variable, another.getValue(variable));
+            }
+        }
+        return result;
     }
 
     /**

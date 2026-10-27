@@ -67,8 +67,14 @@ public enum ZeroAbstractValue {
      * @return the result of the addition.
      */
     public ZeroAbstractValue add(ZeroAbstractValue another) {
-        // TODO: IMPLEMENT
-        throw new UnsupportedOperationException();
+        if (this == BOTTOM || another == BOTTOM) { return BOTTOM; }
+        if (this == TOP || another == TOP) { return TOP; }
+        if (this == ZERO) return another;
+        if (another == ZERO) return this;
+        if (this == another && this != NOT_ZERO) return this;
+        if (this == NEGATIVE && another == NON_POSITIVE || this == NON_POSITIVE && another == NEGATIVE) { return NEGATIVE; }
+        if (this == POSITIVE && another == NON_NEGATIVE || this == NON_NEGATIVE && another == POSITIVE) { return POSITIVE ;}
+        return TOP;
     }
 
     /**
@@ -77,8 +83,13 @@ public enum ZeroAbstractValue {
      * @return the result of the division.
      */
     public ZeroAbstractValue divideBy(ZeroAbstractValue another) {
-        // TODO: IMPLEMENT
-        throw new UnsupportedOperationException();
+        if (this == BOTTOM || another == BOTTOM || another == ZERO) { return BOTTOM; }
+        if (this == ZERO) return ZERO;
+        if (this == TOP || another == TOP || this == NOT_ZERO || another == NOT_ZERO) { return TOP; }
+        boolean thisNeg = this == NEGATIVE || this == NON_POSITIVE;
+        boolean anotherNeg = another == NEGATIVE || another == NON_POSITIVE;
+        if (thisNeg == anotherNeg) { return NON_NEGATIVE; }
+        return NON_POSITIVE;
     }
 
     /**
@@ -87,8 +98,20 @@ public enum ZeroAbstractValue {
      * @return the result of the multiplication.
      */
     public ZeroAbstractValue multiplyBy(ZeroAbstractValue another) {
-        // TODO: IMPLEMENT
-        throw new UnsupportedOperationException();
+        if (this == BOTTOM || another == BOTTOM) return BOTTOM;
+        if (this == ZERO || another == ZERO) return ZERO;
+        if (this == TOP || another == TOP) return TOP;
+        if (this == another){
+            if (this == NEGATIVE || this == POSITIVE) return POSITIVE;
+            if (this == NOT_ZERO) return NOT_ZERO;
+            return NON_NEGATIVE;
+        }
+        if (this == POSITIVE) return another;
+        if (another == POSITIVE) return this;
+        if ((this == NOT_ZERO && another == NEGATIVE) || (this == NEGATIVE && another == NOT_ZERO)) return NOT_ZERO;
+        if ((this == NON_NEGATIVE && another != NOT_ZERO) || (this != NOT_ZERO && another == NON_NEGATIVE)) return NON_POSITIVE;
+        if (this == NEGATIVE || another == NEGATIVE) return NON_NEGATIVE;
+        return TOP;
     }
 
     /**
@@ -97,8 +120,29 @@ public enum ZeroAbstractValue {
      * @return the result of the subtraction.
      */
     public ZeroAbstractValue substract(ZeroAbstractValue another) {
-        // TODO: IMPLEMENT
-        throw new UnsupportedOperationException();
+        if (this == BOTTOM || another == BOTTOM) { return BOTTOM; }
+        if (this == TOP || another == TOP) { return TOP; }
+        if (another == ZERO) { return this; }
+        if (this == ZERO) {
+            if (another == NEGATIVE) return POSITIVE;
+            if (another == POSITIVE) return NEGATIVE;
+            if (another == NON_NEGATIVE) return NON_POSITIVE;
+            if (another == NON_POSITIVE) return NON_NEGATIVE;
+            return NOT_ZERO;
+        }
+        if (this == POSITIVE && (another == NEGATIVE || another == NON_POSITIVE)) return POSITIVE;
+        if (this == NEGATIVE && (another == POSITIVE || another == NON_NEGATIVE)) return NEGATIVE;
+        if (this == NON_POSITIVE) {
+            if (another == POSITIVE) return NEGATIVE;
+            if (another == NON_NEGATIVE) return NON_POSITIVE;
+            return TOP;
+        }
+        if (this == NON_NEGATIVE) {
+            if (another == NEGATIVE) return POSITIVE;
+            if (another == NON_POSITIVE) return NON_NEGATIVE;
+            return TOP;
+        }
+        return TOP;
     }
 
     /**
@@ -107,8 +151,25 @@ public enum ZeroAbstractValue {
      * @return the result of the merge.
      */
     public ZeroAbstractValue merge(ZeroAbstractValue another) {
-        // TODO: IMPLEMENT
-        throw new UnsupportedOperationException();
+        if (this == TOP || another == TOP) { return TOP; }
+        if (this == BOTTOM) { return another; }
+        if (another == BOTTOM) { return this; }
+        if (this == another) { return this; }
+        if (this == NOT_ZERO) {
+            if (another == NEGATIVE || another == POSITIVE){ return NOT_ZERO; }
+            else { return TOP; }
+        }
+        if (another == NOT_ZERO) {
+            if (this == NEGATIVE || this == POSITIVE){ return NOT_ZERO; }
+            else { return TOP; }
+        }
+        if (this == NEGATIVE && another == POSITIVE || this == POSITIVE && another == NEGATIVE) { return NOT_ZERO; }
+        if (this == ZERO && (another == NEGATIVE || another == NON_POSITIVE)) { return NON_POSITIVE; }
+        if (another == ZERO && (this == NEGATIVE || this == NON_POSITIVE)) { return NON_POSITIVE; }
+        if (this == ZERO && (another == POSITIVE || another == NON_NEGATIVE)) { return NON_NEGATIVE; }
+        if (another == ZERO && (this == POSITIVE || this == NON_NEGATIVE)) { return NON_NEGATIVE; }
+        if ((this == NEGATIVE && another == NON_POSITIVE) || (another == NEGATIVE && this == NON_POSITIVE)) { return NON_POSITIVE; }
+        if ((this == POSITIVE && another == NON_NEGATIVE) || (another == POSITIVE && this == NON_NEGATIVE)) { return NON_NEGATIVE; }
+        return TOP;
     }
-
 }
